@@ -1,11 +1,27 @@
 import socket
+import argparse
 
-serverPort = 12000
+parser = argparse.ArgumentParser(description='Run a simple UDP server.')
+parser.add_argument("--port", "-p", type=int,
+                   help='Port number on which server should run')
+args = parser.parse_args()
+print("The command line port number is " + str(args.port))
+
+def get_ip_address():
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("8.8.8.8", 80))
+	return s.getsockname()[0]
+
+if args.port:
+	serverPort = args.port
+else:
+	serverPort = 12000
+	
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serverSocket.bind(('', serverPort))
 
-print ("IP:        " + socket.gethostbyname(socket.gethostname()))
+print ("IP:        " + get_ip_address())
 print ("Hostname:  " + socket.gethostname())
 print ("Port:      " + str(serverPort))
 print ("Press Ctrl+Z to quit. Listening...")
