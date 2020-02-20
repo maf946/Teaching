@@ -1,14 +1,20 @@
 import socket
+import argparse
+
+parser = argparse.ArgumentParser(description='Run a simple UDP client.')
+parser.add_argument("--ipaddress", "-ip", help='IP address for UDP server')
+parser.add_argument("--port", "-p", type=int, help='Port number on which server is running')
+args = parser.parse_args()
+ip = args.ipaddress
+port = args.port
+
 message = ""
+print("I'm configured to send UDP packets to " + str(ip) + " on port " + str(port))
 
 while 1:	
-	if message == "" or message == "123":	
-		serverName = input("Input serverName: ")
-		serverPort = int(input("Input serverPort: "))
 	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)		
-	print("I'm configured to send UDP packets to " + serverName + " on port " + str(serverPort))
-	message = input("Input lowercase sentence (or Ctrl-Z to quit, or 123 to configure): ")
-	clientSocket.sendto(message, (serverName, serverPort))
+	message = input("Input lowercase text: ")
+	clientSocket.sendto(message.encode(), (ip, port))
 	modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
-	print (modifiedMessage)
+	print (modifiedMessage.decode())
 	clientSocket.close()
