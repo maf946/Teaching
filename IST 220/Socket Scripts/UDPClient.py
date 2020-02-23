@@ -2,13 +2,13 @@ import socket
 import argparse
 
 parser = argparse.ArgumentParser(description='Run a simple UDP client.')
-parser.add_argument("--ipaddress", "-ip", type=int, help='IP address for UDP server')
+parser.add_argument("--ipaddress", "-ip", help='IP address for UDP server')
 parser.add_argument("--port", "-p", type=int, help='Port number on which server is running')
 args = parser.parse_args()
 serverIP = args.ipaddress
 serverPort = args.port
 
-print("I'm configured to send UDP packets to " + serverIP + " on port " + serverPort)
+print("I'm configured to send UDP packets to " + str(serverIP) + " on port " + serverPort)
 print ("Press Ctrl+Z to quit.")
 
 while 1:	
