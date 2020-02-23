@@ -1,10 +1,4 @@
 import socket
-import argparse
-
-def handler(signum, frame):
-	print("Closing socket and quitting…")
-	serverSocket.close()
-	quit()
 
 def get_ip_address():
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

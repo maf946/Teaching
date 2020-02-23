@@ -151,3 +151,41 @@ This line prints out the text "Returned from server: " and then `modifiedMessage
 		clientSocket.close()
 		
 This line closes the socket. Since we are at the end of the `While 1` block, we will loop back up to the top and create a new `clientSocket`. Thus, a new socket is being created each time the user enters input into UDPClient.py.
+
+#### UDPServer.py
+
+Let’s now take a look at the server side of the application:
+
+	import socket
+
+	def handler(signum, frame):
+		print("Closing socket and quitting…")
+		serverSocket.close()
+		quit()
+
+	def get_ip_address():
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		s.connect(("8.8.8.8", 80))
+		return s.getsockname()[0]
+	
+	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	serverSocket.bind(('', 0))
+
+	serverIP = get_ip_address()
+	serverPort = serverSocket.getsockname()[1]
+
+	print ("serverIP: " + serverIP)
+	print ("serverPort:     " + str(serverPort))
+	print ("Press Ctrl+Z to quit. Listening...")
+
+	while 1:
+		message, clientAddress = serverSocket.recvfrom(2048)
+		clientIP = str(clientAddress[0])
+		clientPort = str(clientAddress[1])
+		print ("Received from " + clientIP + "#" + clientPort + ": " + message.decode())
+		modifiedMessage = message.upper()
+		serverSocket.sendto(modifiedMessage, clientAddress)
+		
+Note that the beginning of UDPServer is similar to UDPClient. It also imports the socket module, also sets the integer variable serverPort to 12000, and also creates a socket of type SOCK_DGRAM (a UDP socket). The first line of code that is significantly different from UDPClient is:
+
