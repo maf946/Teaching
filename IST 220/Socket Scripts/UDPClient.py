@@ -9,6 +9,7 @@ serverIP = args.ipaddress
 serverPort = args.port
 
 print("I'm configured to send UDP packets to " + str(serverIP) + " on port " + str(serverPort))
+print ("Press Ctrl+Z to quit.")
 
 while 1:	
 	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)		
