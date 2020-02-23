@@ -18,8 +18,8 @@ serverSocket.bind(('', 0))
 serverIP = get_ip_address()
 serverPort = serverSocket.getsockname()[1]
 
-print ("IP:        " + get_ip_address())
-print ("Port:      " + str(serverPort))
+print ("serverIP: " + serverIP)
+print ("Port:     " + str(serverPort))
 print ("Press Ctrl+Z to quit. Listening...")
 
 while 1:
