@@ -150,7 +150,7 @@ This line prints out the text "Returned from server: " and then `modifiedMessage
 
 		clientSocket.close()
 		
-This line closes the socket. Since we are at the end of the `While 1` block, we will loop back up to the top and create a new `clientSocket`. Thus, a new socket is being created each time the user enters input into UDPClient.py.
+This line closes the socket. Since we are at the end of the `while 1:` block, we will loop back up to the top and create a new `clientSocket`. Thus, a new socket is being created each time the user enters input into UDPClient.py.
 
 #### UDPServer.py
 
@@ -158,18 +158,12 @@ Let’s now take a look at the server side of the application:
 
 	import socket
 
-	def handler(signum, frame):
-		print("Closing socket and quitting…")
-		serverSocket.close()
-		quit()
-
 	def get_ip_address():
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		s.connect(("8.8.8.8", 80))
 		return s.getsockname()[0]
-	
+
 	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	serverSocket.bind(('', 0))
 
 	serverIP = get_ip_address()
@@ -186,6 +180,56 @@ Let’s now take a look at the server side of the application:
 		print ("Received from " + clientIP + "#" + clientPort + ": " + message.decode())
 		modifiedMessage = message.upper()
 		serverSocket.sendto(modifiedMessage, clientAddress)
-		
-Note that the beginning of UDPServer is similar to UDPClient. It also imports the socket module, also sets the integer variable serverPort to 12000, and also creates a socket of type SOCK_DGRAM (a UDP socket). The first line of code that is significantly different from UDPClient is:
+	
+As with UDPClient.py, we begin by importing the socket module.
 
+		def get_ip_address():
+			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			s.connect(("8.8.8.8", 80))
+			return s.getsockname()[0]
+
+These lines of code create a new function, `get_ip_address`, which returns the IP address of the machine on which the server is running (in other words, its own IP address). There are a few ways to do this in Python, but for reasons somewhat outside the scope of our concern right now, this is a good way to do it. Don't worry about the details here; just know that we will use the `get_ip_address` function later, so that we can print out the IP address to the terminal.
+
+	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+Just as with UDPClient.py, this creates a socket of type SOCK_DGRAM (a UDP socket). 
+
+	serverSocket.bind(('', 0))
+
+The above line binds (that is, assigns) the port number to the server’s socket. We could have selected a specific port number (in the same way that the designers of HTTP picked the number 80) and hard-coded it here. However, for our purposes it's better to just randomly select an available port number on the server machine. By specifying a port of 0, we're inviting the operating system to do that for us. Suppose that port 49957 is selected; when anyone sends a packet to port 49957 at the IP address of the server, that packet will be directed to this socket. 
+
+	serverIP = get_ip_address()
+	serverPort = serverSocket.getsockname()[1]
+
+We need to know the server's IP address, as well as the port number we just selected. `serverIP` is set based on the value returned from the `get_ip_address()` function, while `serverPort` is set based on inspecting the `serverSocket` we created just a few lines above.
+
+	print ("serverIP: " + serverIP)
+	print ("serverPort:     " + str(serverPort))
+	print ("Press Ctrl+Z to quit. Listening...")
+	
+Display useful information to the user. Note that the prompt says "Listening..."; this server will run indefinitely, based on the `while 1:` loop we will create next. 
+
+	while 1: 
+
+UDPServer.py is going to do what servers do: sit around, run (hopefully) indefinitely, and wait for clients to connect. In the while loop, UDPServer waits for a packet to arrive.
+
+		message, clientAddress = serverSocket.recvfrom(2048)
+	
+This line of code is similar to what we saw in UDPClient. When a packet arrives at the server’s socket, the packet’s data is put into the variable `message` and the packet’s source address is put into the variable clientAddress. The variable `clientAddress` contains both the client’s IP address and the client’s port number. Here, UDPServer _will_ make use of this address information, as it provides a return address, similar to the return address with ordinary postal mail. With this source address information, the server now knows to where it should direct its reply.
+
+		clientIP = str(clientAddress[0])
+		clientPort = str(clientAddress[1])
+
+These lines aren't strictly necessary in order to send a reply packet, but we're including them here because it will be nice for us to be able to print the `clientIP` and `clientPort` values to the terminal window. Here, we are extracting those two parts from the `clientAddress` array, converting them to strings, and storing them in new variables.
+
+		print ("Received from " + clientIP + "#" + clientPort + ": " + message.decode())
+		
+Again, it's not strictly necessary, but it's nice to be able to show a "server log" of what is being sent to the server, and from where. An example of the output from this line is `Received from 192.168.67.1#56855: udp is lazy`. The `#` sign is used by convention as a separator between the IP address and port number. We need to use the `.decode()` function to convert the arriving message to a string.
+
+		modifiedMessage = message.upper()
+
+This line is the heart of our simple application. It takes the line sent by the client and, after converting the message to a string, uses the method upper() to capitalize it.
+
+		serverSocket.sendto(modifiedMessage, clientAddress)
+
+This last line attaches the client’s address (IP address and port number) to the capitalized message and sends the resulting packet into the server’s socket. (As mentioned earlier, the server address is also attached to the packet, although this is done automatically rather than explicitly by the code.) The Internet will then deliver the packet to this client address. After the server sends the packet, it remains in the while loop, waiting for another UDP packet to arrive (from any client running on any host).
