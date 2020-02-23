@@ -15,9 +15,11 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serverSocket.bind(('', 0))
 
+serverIP = get_ip_address()
+serverPort = serverSocket.getsockname()[1]
+
 print ("IP:        " + get_ip_address())
-print ("Hostname:  " + socket.gethostname())
-print ("Port:      " + str(serverSocket.getsockname()[1]))
+print ("Port:      " + str(serverPort))
 print ("Press Ctrl+Z to quit. Listening...")
 
 while 1:
