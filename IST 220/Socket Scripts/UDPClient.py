@@ -8,7 +8,7 @@ args = parser.parse_args()
 serverIP = args.ipaddress
 serverPort = args.port
 
-print("I'm configured to send UDP packets to " + serverIP + " on port " + strserverPort))
+print("I'm configured to send UDP packets to " + serverIP + " on port " + str(serverPort))
 print ("Press Ctrl+Z to quit.")
 
 while 1:	
