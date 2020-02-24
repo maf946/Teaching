@@ -251,3 +251,107 @@ From the application’s perspective, the client’s socket and the server’s c
 We use the same simple client-server application to demonstrate socket programming with TCP: The client sends one line of data to the server, the server capitalizes the line and sends it back to the client. Figure 3 highlights the main socket-related activity of the client and server that communicate over the TCP transport service.
 
 ![Figure 3: The client-server application using TCP](https://github.com/maf946/Teaching/raw/master/IST%20220/Socket%20Scripts/Figure3.png)
+
+#### TCPClient.py
+
+Here is the code for the client side of the application:
+
+	import socket
+	import argparse
+
+	parser = argparse.ArgumentParser(description='Run a simple TCP client.')
+	parser.add_argument("--ipaddress", "-ip", help='IP address for TCP server')
+	parser.add_argument("--port", "-p", type=int, help='Port number on which server is running')
+	args = parser.parse_args()
+	serverIP = args.ipaddress
+	serverPort = args.port
+
+	print("I'm configured to send TCP packets to " + serverIP + " on port " + str(serverPort))
+	print ("Press Ctrl+Z to quit.")
+
+	while 1:
+		clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		clientSocket.connect((serverIP, serverPort))
+		message = input("Input lowercase text: ")
+		clientSocket.send(message.encode())
+		modifiedMessage = clientSocket.recv(1024)
+		print("Returned from server: " + modifiedMessage.decode())
+		clientSocket.close()
+		
+Let’s now take a look at the various lines in the code that differ significantly from the UDP implementation. The first such line is the creation of the client socket.
+
+		clientSocket = socket(AF_INET, SOCK_STREAM)
+
+This line creates the client’s socket, called `clientSocket`. The first parameter again indicates that the underlying network is using IPv4. The second parameter indicates that the socket is of type `SOCK_STREAM`, which means it is a TCP socket (rather than a UDP socket). Note that we are again not specifying the port number of the client socket when we create it; we are instead letting the operating system do this for us. Now the next line of code is very different from what we saw in UDPClient:
+
+		clientSocket.connect((serverIP, serverPort))
+		
+Recall that before the client can send data to the server (or vice versa) using a TCP socket, a TCP connection must first be established between the client and server. The above line initiates the TCP connection between the client and server. The parameter of the `connect()` method is the address of the server side of the connection. After this line of code is executed, the three-way handshake is performed and a TCP connection is established between the client and server.
+
+		message = input("Input lowercase text: ")
+		clientSocket.send(message.encode())
+
+The first line, as before, prompts the user for a message. The second line sends the `message` through the client’s socket and into the TCP connection. Note that the program does not explicitly create a packet and attach the destination address to the packet, as was the case with UDP sockets. Instead the client program simply drops the bytes in the string sentence into the TCP connection. The client then waits to receive bytes from the server.
+
+		modifiedMessage = clientSocket.recv(2048)
+
+When characters arrive from the server, they get placed into the string `modifiedMessage`. Characters continue to accumulate in modifiedMessage until the line ends with a carriage return character. After printing the capitalized message, we close the client’s socket:
+
+		clientSocket.close()
+		
+This last line closes the socket and, hence, closes the TCP connection between the client and the server. It causes TCP in the client to send a TCP message to TCP in the server (see Section 3.5).
+
+#### TCPServer.py
+
+Now let's take a look at the server program.
+
+	import socket
+
+	def get_ip_address():
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		s.connect(("8.8.8.8", 80))
+		return s.getsockname()[0]
+	
+	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	serverSocket.bind(('', 0))
+
+	serverIP = get_ip_address()
+	serverPort = serverSocket.getsockname()[1]
+
+	serverSocket.listen(1)
+
+	print ("serverIP: " + serverIP)
+	print ("serverPort:     " + str(serverPort))
+	print ("Press Ctrl+Z to quit. Listening...")
+
+	while 1:
+		connectionSocket, addr = serverSocket.accept()
+		clientIP = str(addr[0])
+		clientPort = str(addr[1])
+		message = connectionSocket.recv(1024).decode()
+		print ("Received from " + clientIP + "#" + clientPort + ": " + message)
+		modifiedMessage = message.upper()
+		connectionSocket.send(modifiedMessage.encode())
+		connectionSocket.close()
+		
+Let’s now take a look at the lines that differ significantly from UDPServer and TCPClient. As with TCPClient, the server creates a TCP socket with:
+
+	serverSocket=socket(AF_INET, SOCK_STREAM)	
+	
+Similar to UDPServer, we associate a randomly-selected port number with this socket:
+
+	serverSocket.bind(('', 0))
+
+But with TCP, serverSocket will be our welcoming socket. After establishing this welcoming door, we will wait and listen for some client to knock on the door:
+
+	serverSocket.listen(1)	
+
+This line has the server listen for TCP connection requests from the client. The parameter specifies the maximum number of queued connections (at least 1).
+
+		connectionSocket, addr = serverSocket.accept()
+	
+When a client knocks on this door, the program invokes the `accept()` method for serverSocket, which creates a new socket in the server, called­`connectionSocket`, dedicated to this particular client. The client and server then complete the handshaking, creating a TCP connection between the client’s `clientSocket` and the server’s `connectionSocket`. With the TCP connection established, the client and server can now send bytes to each other over the connection. With TCP, all bytes sent from one side not are not only guaranteed to arrive at the other side but also guaranteed arrive in order.
+
+		connectionSocket.close()
+
+In this program, after sending the modified message to the client, we close the connection socket. But since `serverSocket` remains open, another client can now knock on the door and send the server a sentence to modify.
