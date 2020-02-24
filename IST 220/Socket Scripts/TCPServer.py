@@ -17,7 +17,7 @@ print ("serverIP: " + serverIP)
 print ("serverPort:     " + str(serverPort))
 print ("Press Ctrl+Z to quit. Listening...")
 
-while True:
+while 1:
 	connectionSocket, addr = serverSocket.accept()
 	clientIP = str(addr[0])
 	clientPort = str(addr[1])
