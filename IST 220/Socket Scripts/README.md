@@ -45,9 +45,9 @@ We will run the client and server as follows.
 
 First, open a terminal window and run `python3 UDPServer.py`. You should see something like the following as the output (you will almost certainly have a different IP address and port number):
 
-		serverIP: 		192.168.0.118
-		serverPort: 	49957
-		Press Ctrl+Z to quit. Listening...
+	serverIP: 		192.168.0.118
+	serverPort: 	49957
+	Press Ctrl+Z to quit. Listening...
 	
 Make note of the serverIP and serverPort values.
 
