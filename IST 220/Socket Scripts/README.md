@@ -43,15 +43,15 @@ The client program is called UDPClient.py, and the server program is called UDPS
 
 We will run the client and server as follows.
 
-1. Open a terminal window and run `python3 UDPServer.py`. You should see something like the following as the output (you will almost certainly have a different IP address and port number):
+First, open a terminal window and run `python3 UDPServer.py`. You should see something like the following as the output (you will almost certainly have a different IP address and port number):
 
-	serverIP: 192.168.0.118
-	Port:     49957
-	Press Ctrl+Z to quit. Listening...
-
+		serverIP: 		192.168.0.118
+		serverPort: 	49957
+		Press Ctrl+Z to quit. Listening...
+	
 Make note of the serverIP and serverPort values.
 
-2. Next, either open a second terminal window on your own machine; alternatively, work with a friend or classmate and have them run this on their machine, instead. This is designed to work on the Internet so any two Internet-connected machines should work!
+Next, either open a second terminal window on your own machine; alternatively, work with a friend or classmate and have them run this on their machine, instead. This is designed to work on the Internet so any two Internet-connected machines should work!
 
 On the second terminal window, run `python3 UDPClient.py -ip [IP address] -p [port number]`, making sure to include the values provided by UDPServer.py. Based on the example from the prior step, the command to run would be `python3 UDPClient.py -ip 192.168.0.118 -p 49957`. You should see something like the following as the output:
 
@@ -169,8 +169,8 @@ Let’s now take a look at the server side of the application:
 	serverIP = get_ip_address()
 	serverPort = serverSocket.getsockname()[1]
 
-	print ("serverIP: " + serverIP)
-	print ("serverPort:     " + str(serverPort))
+	print ("serverIP:\t" + serverIP)
+	print ("serverPort:\t" + str(serverPort))
 	print ("Press Ctrl+Z to quit. Listening...")
 
 	while 1:
@@ -203,11 +203,11 @@ The above line binds (that is, assigns) the port number to the server’s socket
 
 We need to know the server's IP address, as well as the port number we just selected. `serverIP` is set based on the value returned from the `get_ip_address()` function, while `serverPort` is set based on inspecting the `serverSocket` we created just a few lines above.
 
-	print ("serverIP: " + serverIP)
-	print ("serverPort:     " + str(serverPort))
+	print ("serverIP:\t" + serverIP)
+	print ("serverPort:\t" + str(serverPort))
 	print ("Press Ctrl+Z to quit. Listening...")
 	
-Display useful information to the user. Note that the prompt says "Listening..."; this server will run indefinitely, based on the `while 1:` loop we will create next. 
+Display useful information to the user; the `\t` symbol inserts a `tab` character, to help line the values up nicely. Note that the prompt says "Listening..."; this server will run indefinitely, based on the `while 1:` loop we will create next. 
 
 	while 1: 
 
