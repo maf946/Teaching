@@ -246,6 +246,8 @@ During the three-way handshake, the client process knocks on the welcoming door 
 
 From the application’s perspective, the client’s socket and the server’s connection socket are directly connected by a pipe. As shown in Figure 2, the client process can send arbitrary bytes into its socket, and TCP guarantees that the server process will receive (through the connection socket) each byte in the order sent. TCP thus provides a reliable service between the client and server processes. Furthermore, just as people can go in and out the same door, the client process not only sends bytes into but also receives bytes from its socket; similarly, the server process not only receives bytes from but also sends bytes into its connection socket.
 
+![Figure 2: The `TCPServer` process has two sockets](https://github.com/maf946/Teaching/raw/master/IST%20220/Socket%20Scripts/Figure2.png)
+
 We use the same simple client-server application to demonstrate socket programming with TCP: The client sends one line of data to the server, the server capitalizes the line and sends it back to the client. Figure 3 highlights the main socket-related activity of the client and server that communicate over the TCP transport service.
 
-![Figure 2: The `TCPServer` process has two sockets](https://github.com/maf946/Teaching/raw/master/IST%20220/Socket%20Scripts/Figure2.png)
+![Figure 3: The client-server application using TCP](https://github.com/maf946/Teaching/raw/master/IST%20220/Socket%20Scripts/Figure3.png)
