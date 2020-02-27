@@ -3,9 +3,9 @@
 import random 
 import sys
 
-#studentName = input("Hi! What is your name? ")
-#print ("Hi, " + studentName + "! Let's do some math today. Let's start with addition.")
-#print("You can take a break by typing \"bye\" instead of a number")
+studentName = input("Hi! What is your name? ")
+print ("Hi, " + studentName + "! Let's do some math today. Let's start with addition.")
+print("You can take a break by typing \"bye\" instead of a number")
 
 emojiDictionary = { 
 	"0": "0️⃣",
