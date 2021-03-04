@@ -6,3 +6,4 @@ sudo apt install wireshark -y
 sudo dpkg-reconfigure wireshark-common
 sudo usermod -a -G wireshark $USER
 newgrp wireshark
+xrandr --size 1440x900
